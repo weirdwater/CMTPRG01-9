@@ -1,4 +1,4 @@
-import { random, randomInRange, randomFirstName } from './random'
+import { random, randomInRange, randomFirstName, randomFullName, generateRandomUser } from './random'
 
 test('Expect "random" number 2811915801 with seed 1', () => {
   expect(random(1)[0]).toBe(2811915801)
@@ -22,4 +22,15 @@ test('Expect result to be between 0 and 10', () => {
 
 test('Expect "Nicole" for seed 1', () => {
   expect(randomFirstName(1)[0]).toBe('Nicole')
+})
+
+test('Expect "Nicole Gray" for seed 1', () => {
+  expect(randomFullName(1)[0]).toBe('Nicole Gray')
+})
+
+test('Randomly generate Nicole Gray, 58 and Eagles fan with seed 1', () => {
+  const [u, seed] = generateRandomUser(1)
+  expect(u.name).toBe('Nicole Gray')
+  expect(u.favoriteTeam).toBe('Eagles')
+  expect(u.age).toBe(58)
 })
