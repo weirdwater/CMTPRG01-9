@@ -1,4 +1,4 @@
-import { add } from './main'
+import { add } from '../src/main'
 
 test('Adding 1 and 2 results in 3', () => {
   expect(add(1)(2)).toBe(3)

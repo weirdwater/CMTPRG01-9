@@ -1,4 +1,4 @@
-import { random, randomInRange, randomFirstName, randomFullName, generateRandomUser } from './random'
+import { random, randomInRange, randomFirstName, randomFullName, generateRandomUser } from '../src/random'
 
 test('Expect "random" number 2811915801 with seed 1', () => {
   expect(random(1)[0]).toBe(2811915801)
