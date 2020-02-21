@@ -12,6 +12,10 @@ const flatten = <a>([x, ...xs]: a[][]): a[] => def(x) ? Array.isArray(x) ? [...x
 
 const first = <a>(n: number = 1) => ([x, ...xs]: a[]): a[] => n && def(x) ? [x, ...first<a>(n - 1)(xs)] : []
 
+const head = <a>([x]: a[]) => x
+
+const tail = <a>([,...xs]: a[]) => xs
+
 export const last = <a>([x, ...xs]: a[], n: number = 1): a[] => def(x) ? n > xs.length ? [x, ...last<a>(xs, n)] : [...last<a>(xs, n)] : []
 
 const concat = <a>(a: a[]) => (b: a[]): a[] => [...a, ...b]
