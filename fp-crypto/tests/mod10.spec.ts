@@ -1,6 +1,6 @@
-import { mod10, addAndMod10Array, mod10Array, alphaValues } from "../src/mod10"
+import { mod10, addAndMod10Array, mod10Array, alphaValues, last } from "../src/mod10"
 
-test('mod10 produces the correct hash for the string test', () => {
+test('mod10 produces the correct hash for the string "text"', () => {
   expect(mod10('text')).toBe('d0b3cb0cc9100ef243a1023b2a129d15c28489e387d3f8b687a7299afb4b5079')
 })
 
@@ -21,3 +21,10 @@ test('correct ascii values for string', () => {
 test('Numeric values are not converted to ascii', () => {
   expect(alphaValues('text9')).toEqual([116, 101, 120, 116, 9])
 })
+
+test('last retrieves the correct tail of an array.', () => {
+  expect(last(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 4)).toEqual(['D', 'E', 'F', 'G'])
+  expect(last(['A', 'B', 'C', 'D'], 3)).toEqual(['B', 'C', 'D'])
+  expect(last(['A', 'B', 'C'], 3)).toEqual(['A', 'B', 'C'])
+})
+
