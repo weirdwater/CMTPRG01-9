@@ -29,12 +29,12 @@ test('last retrieves the correct tail of an array.', () => {
 })
 
 test('tailFrom always returns the tail from a specific number of entries', () => {
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 0)).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 1)).toEqual(['B', 'C', 'D', 'E', 'F', 'G'])
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 4)).toEqual(['E', 'F', 'G'])
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 5)).toEqual(['F', 'G'])
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 7)).toEqual([])
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 10)).toEqual([])
-  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], -10)).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+  expect(tailFrom(0)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+  expect(tailFrom(1)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual(['B', 'C', 'D', 'E', 'F', 'G'])
+  expect(tailFrom(4)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual(['E', 'F', 'G'])
+  expect(tailFrom(5)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual(['F', 'G'])
+  expect(tailFrom(7)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual([])
+  expect(tailFrom(10)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual([])
+  expect(tailFrom(-10)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
 })
 
