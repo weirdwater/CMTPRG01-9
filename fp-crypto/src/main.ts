@@ -1,4 +1,4 @@
-import { alphaValues, mod10, last, supplement } from "./mod10"
+import { alphaValues, mod10Hash, last, supplement } from "./mod10"
 
 console.log("hello world")
 

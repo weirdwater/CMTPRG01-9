@@ -1,10 +1,13 @@
 import { pipe } from "fp-ts/lib/pipeable"
+import crypto from 'crypto'
 
 const def = <a>(x: a | undefined): x is a => typeof x !== 'undefined'
 
 const undef = <a>(x: a | undefined): x is undefined => !def(x)
 
 const map = <a, b>(f: (x: a) => b) => ([x, ...xs]: a[]): b[] => undef(x) ? [] : [f(x), ...map(f)(xs)]
+
+const reduce = <a, b>(f: (m: b, x: a, i: number) => b, memo: b, i: number = 0) => ([x, ...xs]: a[]): b => def(x) ? reduce(f, f(memo, x, i), i + 1)(xs) : memo
 
 const filter = <a>(p: (x: a) => boolean) => ([x, ...xs]: a[]): a[] => def(x) ? p(x) ? [x, ...filter<a>(p)(xs)] : filter<a>(p)(xs) : []
 
@@ -33,29 +36,28 @@ export const supplement = (x: number[]) => pipe(
 
 export const mapMerge = <a, b, c>(f: (x: [a, b]) => c) => ([[a, ...as], [b, ...bs]]: [a[], b[]]): c[] => def(a) && def(b) ? [f([a, b]), ...mapMerge(f)([as, bs])] : []
 
-export const addAndMod10Array = mapMerge<number, number, number>(([a, b]) => (a + b) % 10)
+export const mergeMod10 = mapMerge<number, number, number>(([a, b]) => (a + b) % 10)
 
 const emptySet = [0,0,0,0,0,0,0,0,0,0]
 
-export const mod10Array = (input: number[], state: number[] = emptySet): number[] => input.length > 0 ? mod10Array(tailFrom10(input), addAndMod10Array([supplement(first10(input)), state])) : state
+export const mod10 = (input: number[], state: number[] = emptySet): number[] => input.length > 0 ? mod10(tailFrom10(input), mergeMod10([supplement(first10(input)), state])) : state
 
-
-export const mod10 = (s: string): string => {
-
-  const digits = pipe(
-    alphaValues(s),
-    filter(x => x !== 32), // filter out spaces (Should this be done here? Or is it the responsibility of the caller?)
-    map(x => x.toString(10).split("")),
-    flatten,
-    map(x => parseInt(x, 10))
-  )
-
-
-
-  return s
-}
+const sha256 = (s: crypto.BinaryLike) => crypto.createHash('sha256').update(s).digest('hex')
 
 export const alphaValues = (s: string): number[] => s.split('')
   .map(c => isAlphaChar(c) ? c.charCodeAt(0) : parseInt(c))
 
 const isAlphaChar = (c: string) => Object.is(parseInt(c, 10), NaN)
+
+export const mod10Hash = (s: string): string => pipe(
+  alphaValues(s),
+  filter(x => x !== 32), // filter out spaces (Should this be done here? Or is it the responsibility of the caller?)
+  map(x => x.toString(10).split("")),
+  flatten,
+  map(x => parseInt(x, 10)),
+  mod10,
+  map(x => x.toString(10)),
+  reduce<string, string>((m, x) => m + x, ""),
+  sha256
+)
+
