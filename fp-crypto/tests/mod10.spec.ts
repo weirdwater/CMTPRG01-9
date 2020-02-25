@@ -1,4 +1,4 @@
-import { mod10, addAndMod10Array, mod10Array, alphaValues, last } from "../src/mod10"
+import { mod10, addAndMod10Array, mod10Array, alphaValues, last, tailFrom } from "../src/mod10"
 
 test('mod10 produces the correct hash for the string "text"', () => {
   expect(mod10('text')).toBe('d0b3cb0cc9100ef243a1023b2a129d15c28489e387d3f8b687a7299afb4b5079')
@@ -26,5 +26,15 @@ test('last retrieves the correct tail of an array.', () => {
   expect(last(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 4)).toEqual(['D', 'E', 'F', 'G'])
   expect(last(['A', 'B', 'C', 'D'], 3)).toEqual(['B', 'C', 'D'])
   expect(last(['A', 'B', 'C'], 3)).toEqual(['A', 'B', 'C'])
+})
+
+test('tailFrom always returns the tail from a specific number of entries', () => {
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 0)).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 1)).toEqual(['B', 'C', 'D', 'E', 'F', 'G'])
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 4)).toEqual(['E', 'F', 'G'])
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 5)).toEqual(['F', 'G'])
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 7)).toEqual([])
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 10)).toEqual([])
+  expect(tailFrom(['A', 'B', 'C', 'D', 'E', 'F', 'G'], -10)).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
 })
 
