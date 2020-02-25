@@ -27,7 +27,11 @@ export const supplement = (x: number[]) => pipe(
   first<number>(10)
 )
 
-export const addAndMod10Array = ([a, ...as]: number[], [b, ...bs]: number[]): number[] => def(a) && def(b) ? [(a + b) % 10, ...addAndMod10Array(as, bs)] : []
+// export const addAndMod10Array = ([a, ...as]: number[], [b, ...bs]: number[]): number[] => def(a) && def(b) ? [(a + b) % 10, ...addAndMod10Array(as, bs)] : []
+
+export const mapMerge = <a, b, c>(f: (x: [a, b]) => c) => ([[a, ...as], [b, ...bs]]: [a[], b[]]): c[] => def(a) && def(b) ? [f([a, b]), ...mapMerge(f)([as, bs])] : []
+
+export const addAndMod10Array = mapMerge<number, number, number>(([a, b]) => (a + b) % 10)
 
 export const mod10Array = (a: number[]): number[] => a
 

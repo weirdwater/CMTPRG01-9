@@ -7,7 +7,7 @@ test('mod10 produces the correct hash for the string "text"', () => {
 test('Function adds array members and applies mod10 to the results', () => {
   const a = [7, 4, 3, 7, 8, 2, 9, 2, 9, 1]
   const b = [8, 7, 4, 3, 7, 0, 2, 1, 6, 7]
-  expect(addAndMod10Array(a, b)).toEqual([5, 1, 7, 0, 5, 2, 1, 3, 5, 8])
+  expect(addAndMod10Array([a, b])).toEqual([5, 1, 7, 0, 5, 2, 1, 3, 5, 8])
 })
 
 test('correct mod10 result for array of numbers', () => {
