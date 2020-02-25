@@ -18,11 +18,13 @@ const tail = <a>([,...xs]: a[]) => xs
 
 export const last = <a>([x, ...xs]: a[], n: number = 1): a[] => def(x) ? n > xs.length ? [x, ...last<a>(xs, n)] : [...last<a>(xs, n)] : []
 
-export const tailFrom = <a>(a: a[], i: number) => last(a, a.length - i)
+export const tailFrom = <a>(i: number) => (a: a[]) => last(a, a.length - i)
 
 const concat = <a>(a: a[]) => (b: a[]): a[] => [...a, ...b]
 
 const first10 = <a>(_: a[]) => first<a>(10)(_)
+
+const tailFrom10 = <a>(_: a[]) => tailFrom<a>(10)(_)
 
 export const supplement = (x: number[]) => pipe(
   concat(x)([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -35,7 +37,7 @@ export const addAndMod10Array = mapMerge<number, number, number>(([a, b]) => (a 
 
 const emptySet = [0,0,0,0,0,0,0,0,0,0]
 
-export const mod10Array = (input: number[], state: number[] = emptySet): number[] => input.length > 0 ? mod10Array(tailFrom(input, 10), addAndMod10Array([supplement(first10(input)), state])) : state
+export const mod10Array = (input: number[], state: number[] = emptySet): number[] => input.length > 0 ? mod10Array(tailFrom10(input), addAndMod10Array([supplement(first10(input)), state])) : state
 
 
 export const mod10 = (s: string): string => {
