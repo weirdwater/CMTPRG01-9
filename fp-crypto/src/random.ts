@@ -1,4 +1,4 @@
-import { State, state, chain } from 'fp-ts/lib/State'
+import { State, state, chain, map } from 'fp-ts/lib/State'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { sequenceT, sequenceS } from 'fp-ts/lib/Apply'
 
@@ -9,11 +9,6 @@ type Random<a> = State<number, a>
 export const random: Random<number> = (seed: number) => {
   const nextSeed = (1839567234 * seed + 972348567) % M
   return [nextSeed, nextSeed]
-}
-
-const map: <A, B>(f: (a: A) => B) => <E>(fa: State<E, A>) => State<E, B> = f => generate => seed => {
-  const [a, nextSeed] = generate(seed)
-  return [f(a), nextSeed]
 }
 
 export const randomInRange = (min: number, max: number): Random<number> =>
