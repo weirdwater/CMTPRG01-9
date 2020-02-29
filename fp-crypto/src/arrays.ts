@@ -22,3 +22,7 @@ export const tailFrom = (i: number) => <a>(x: a[]) => last(x.length - i)(x)
 export const tail = tailFrom(1)
 
 export const concat = <a>(a: a[]) => (b: a[]): a[] => [...a, ...b]
+
+export const join = (d: string = "") => reduce<string, string>((m, x) => m + d + x, "")
+
+export const split = (d: string = "") => (a: string) => a.split(d)

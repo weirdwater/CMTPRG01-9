@@ -61,4 +61,3 @@ export const generateRandomUser = sequenceS(state)({
   age: randomInRange(18,100),
   favoriteTeam: randomTeam
 })
-

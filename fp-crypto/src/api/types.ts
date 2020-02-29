@@ -23,7 +23,7 @@ export interface NextOpen {
   blockchain: Block
   transactions: Transaction[]
   timestamp: number
-  algorith: string
+  algorithm: string
   open: true
   countdown: number
 }

@@ -1,5 +1,5 @@
-import { Block } from "../src/api/types"
-import { hashBlock } from "../src/hash-block"
+import { Block, NextOpen } from "../src/api/types"
+import { hashBlock, blockToHash, mine } from "../src/hash-block"
 
 const block0: Block = {
   _id: "5c5003d55c63d51f191cadd6",
@@ -21,6 +21,29 @@ const block0: Block = {
 
 const hash0 = '00005d430ce77ad654b5309a770350bfb4cf49171c682330a2eccc98fd8853cf'
 
+const next: NextOpen = {
+  blockchain: block0,
+  transactions: [
+      {
+          _id: "5c5003d55c63d51f191cadd7",
+          from: "CMGT Mining Corporation",
+          to: "Bas BOOTB",
+          amount: 1,
+          timestamp: 1548747733261,
+          __v: 0
+      }
+  ],
+  timestamp: 1548748101396,
+  algorithm: "mod10sha,0000",
+  open: true,
+  countdown: 57235
+}
+
+
 test('Block hashes match', () => {
-  expect(hashBlock(block0)).toBe(hash0)
+  expect(blockToHash(block0)[0]).toBe(hash0)
+})
+
+test('Produces the correct nonce for next block', () => {
+  expect(mine(next)).toBe("3926")
 })

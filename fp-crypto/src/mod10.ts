@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import { pipe } from "fp-ts/lib/pipeable"
-import { concat, def, filter, first, flatten, map, reduce, tailFrom } from "./arrays"
+import { concat, def, filter, first, flatten, map, reduce, tailFrom, split, join } from "./arrays"
+import { stringify } from './utils'
 
 const first10 = first(10)
 
@@ -28,12 +29,13 @@ const isAlphaChar = (c: string) => Object.is(parseInt(c, 10), NaN)
 export const mod10Hash = (s: string): string => pipe(
   alphaValues(s),
   filter(x => x !== 32), // filter out spaces (Should this be done here? Or is it the responsibility of the caller?)
-  map(x => x.toString(10).split("")),
+  map(stringify),
+  map(split("")),
   flatten,
   map(x => parseInt(x, 10)),
   mod10,
-  map(x => x.toString(10)),
-  reduce<string, string>((m, x) => m + x, ""),
+  map(stringify),
+  join(""),
   sha256
 )
 
