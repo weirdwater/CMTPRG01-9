@@ -2,9 +2,9 @@ import crypto from 'crypto'
 import { pipe } from "fp-ts/lib/pipeable"
 import { concat, def, filter, first, flatten, map, reduce, tailFrom } from "./arrays"
 
-const first10 = <a>(_: a[]) => first<a>(10)(_)
+const first10 = first(10)
 
-const tailFrom10 = <a>(_: a[]) => tailFrom<a>(10)(_)
+const tailFrom10 = tailFrom(10)
 
 export const supplement = (x: number[]) => pipe(
   concat(x)([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),

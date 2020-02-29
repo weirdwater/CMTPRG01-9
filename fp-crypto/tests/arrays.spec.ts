@@ -1,9 +1,9 @@
 import { last, tailFrom } from "../src/arrays"
 
 test('last retrieves the correct tail of an array.', () => {
-  expect(last(['A', 'B', 'C', 'D', 'E', 'F', 'G'], 4)).toEqual(['D', 'E', 'F', 'G'])
-  expect(last(['A', 'B', 'C', 'D'], 3)).toEqual(['B', 'C', 'D'])
-  expect(last(['A', 'B', 'C'], 3)).toEqual(['A', 'B', 'C'])
+  expect(last(4)(['A', 'B', 'C', 'D', 'E', 'F', 'G'])).toEqual(['D', 'E', 'F', 'G'])
+  expect(last(3)(['A', 'B', 'C', 'D'])).toEqual(['B', 'C', 'D'])
+  expect(last(3)(['A', 'B', 'C'])).toEqual(['A', 'B', 'C'])
 })
 
 test('tailFrom always returns the tail from a specific number of entries', () => {

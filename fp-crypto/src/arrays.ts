@@ -11,14 +11,14 @@ export const filter = <a>(p: (x: a) => boolean) => ([x, ...xs]: a[]): a[] => def
 
 export const flatten = <a>([x, ...xs]: a[][]): a[] => def(x) ? Array.isArray(x) ? [...x, ...flatten(xs)] : [x, ...flatten(xs)] : []
 
-export const first = <a>(n: number = 1) => ([x, ...xs]: a[]): a[] => n && def(x) ? [x, ...first<a>(n - 1)(xs)] : []
+export const first = (n: number = 1) => <a>([x, ...xs]: a[]): a[] => n && def(x) ? [x, ...first(n - 1)(xs)] : []
 
-export const head = <a>([x]: a[]) => x
+export const head = first(1)
 
-export const tail = <a>([,...xs]: a[]) => xs
+export const last = (n: number = 1) => <a>([x, ...xs]: a[]): a[] => def(x) ? n > xs.length ? [x, ...last(n)(xs)] : [...last(n)(xs)] : []
 
-export const last = <a>([x, ...xs]: a[], n: number = 1): a[] => def(x) ? n > xs.length ? [x, ...last<a>(xs, n)] : [...last<a>(xs, n)] : []
+export const tailFrom = (i: number) => <a>(x: a[]) => last(x.length - i)(x)
 
-export const tailFrom = <a>(i: number) => (a: a[]) => last(a, a.length - i)
+export const tail = tailFrom(1)
 
 export const concat = <a>(a: a[]) => (b: a[]): a[] => [...a, ...b]
