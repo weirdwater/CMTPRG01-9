@@ -29,8 +29,7 @@ const isAlphaChar = (c: string) => Object.is(parseInt(c, 10), NaN)
 export const mod10Hash = (s: string): string => pipe(
   alphaValues(s),
   filter(x => x !== 32), // filter out spaces (Should this be done here? Or is it the responsibility of the caller?)
-  map(stringify),
-  map(split("")),
+  map(x => pipe(stringify(x), split(""))),
   flatten,
   map(x => parseInt(x, 10)),
   mod10,
