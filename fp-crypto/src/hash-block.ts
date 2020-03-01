@@ -2,12 +2,15 @@ import { pipe } from "fp-ts/lib/pipeable";
 import { Block, NextOpen, TransactionData } from "./api/types";
 import { join, map, split, def } from "./arrays";
 import { mod10Hash } from "./mod10";
-import { stringify, first } from "./utils";
+import { stringify, first, length, trampoline } from "./utils";
 import { State } from "fp-ts/lib/State";
 import { random } from "./random";
 
 export type Hasher = State<string, string>
 
+export type HashResult = [string, string]
+
+export const mkHashResult = (hash: string) => (nonce: string): HashResult => [hash, nonce]
 
 const transactionToString = (t: TransactionData) => pipe(
   [ t.from, t.to, t.amount, t.timestamp ],
@@ -35,8 +38,6 @@ export const hashNew = (next: NextOpen) => pipe(
   ([h, n]) => hashBlock(h)(next.transactions)(next.timestamp)
 )
 
-const matchesPuzzle = (p: string) => (s: string) => {console.log(p, first(p.length)(s), s) ; return first(p.length)(s) === p}
-
 const randomNonce = (n0: number) => pipe(
   random(n0),
   ([n1, s]) => n1,
@@ -44,14 +45,13 @@ const randomNonce = (n0: number) => pipe(
 )
 
 export const mine = (n: NextOpen) => {
-  const [a, p] = split(",")(n.algorithm)
+  const [algorithm, puzzle] = split(",")(n.algorithm)
+  const matchesPuzzle = (s: string) => first(length(puzzle))(s) === puzzle
   const hasher = hashNew(n)
 
-  // const findNonce = (maxDepth: number = 500) => ([hash, nonce]: [string, string]): [string, string] => matchesPuzzle(p)(hash) || maxDepth === 0 ? [hash, nonce] : pipe(nonce, parseInt, randomNonce, hasher, findNonce(maxDepth - 1))
-  const findNonce = ([hash, nonce]: [string, string]): [string, string] => matchesPuzzle(p)(hash) ? [hash, nonce] : pipe(nonce, parseInt, randomNonce, hasher, findNonce)
+  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(hash) ? mkHashResult(hash)(nonce) : () => pipe(nonce, parseInt, randomNonce, hasher, findNonce)
 
-
-
-
-  return pipe(n.timestamp, randomNonce, hasher, findNonce)
+  return trampoline<HashResult>(() => findNonce(pipe(n.timestamp, randomNonce, mkHashResult(""))))()
 }
+
+
