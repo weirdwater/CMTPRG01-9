@@ -45,5 +45,5 @@ test('Block hashes match', () => {
 })
 
 test('Produces the correct nonce for next block', () => {
-  expect(mine(next)).toEqual(["00005b519fe859ef80b1dcdbc7c3ade4cc114878a3ba2eee76878a85c2dbc2ac", "5001705071"])
+  expect(mine(next)("5001705071")).toEqual(["00005b519fe859ef80b1dcdbc7c3ade4cc114878a3ba2eee76878a85c2dbc2ac", "5001705071"])
 })

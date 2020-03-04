@@ -1,5 +1,8 @@
-import { mine } from "./hash-block";
-import { NextOpen, Block } from "./api/types";
+import { mine, HashResult } from "./hash-block";
+import { NextOpen, Block, Next } from "./api/types";
+import { any, wait, promise, stateful, nothing } from "./continuation";
+import axios from 'axios'
+import { getNext } from "./api";
 
 const block0: Block = {
   _id: "5c5003d55c63d51f191cadd6",
@@ -37,4 +40,9 @@ const next: NextOpen = {
   countdown: 57235
 }
 
-console.log(mine(next))
+const _mine = (n: NextOpen) => (nonce: string) => new Promise<HashResult>(res => res(mine(n)(nonce)))
+
+stateful<string>(s => any<string>([
+  promise<string,HashResult>(_mine(next))('3926').map(([hash, nonce]) => `With ${nonce} as nonce the next block's hash is ${hash}.`),
+  promise<{},Next>(getNext)({}).map(n => `Chain is ${n.open ? 'open' : 'closed'} for ${n.countdown / 1000} seconds.`)
+]))('start').run(s => console.log(`run: ${s}`))

@@ -1,3 +1,4 @@
+import { alphaValues } from "./mod10"
 
 
 export interface Fun<a,b> { (_: a): b }
@@ -42,17 +43,33 @@ const never = <a>(c: Continuation<{}>): Continuation<a> => mkContinuation({
 })
 
 export const nothing = <a>(): Continuation<a> => mkContinuation({
-  run: (c: Fun<a, void>) => null
+  run: (cont) => null
 })
 
 // stateful
+export const stateful = <a>(c: IOContinuation<a,a>): IOContinuation<a,a> => (initialState: a) => {
+  let state = initialState
+
+  return mkContinuation({
+    run: (cont) => c(state).run(x => { state = x; cont(x) })
+  })
+}
 
 // promise
+export const promise = <a,b>(p: Fun<a, Promise<b>>, onError: Fun<any, void> = () => {}): IOContinuation<a, b> => input => mkContinuation({
+  run: (cont) => p(input).then(cont).catch(onError)
+})
 
 // async
 
 // wait
+export const wait = (ms: number): Continuation<{}> => mkContinuation<{}>({
+  run: (cont) => setTimeout(cont, ms)
+})
 
 // any
+export const any = <a>(cs: Continuation<a>[]) => mkContinuation<a>({
+  run: (cont) => cs.map(c => c.run(cont))
+})
 
-// first?
+

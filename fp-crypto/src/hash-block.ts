@@ -1,7 +1,7 @@
 import { pipe } from "fp-ts/lib/pipeable";
 import { Block, NextOpen, TransactionData } from "./api/types";
-import { join, map, split, def } from "./arrays";
-import { mod10Hash } from "./mod10";
+import { join, map, split, def, reduce } from "./arrays";
+import { mod10Hash, alphaValues } from "./mod10";
 import { stringify, first, length, trampoline } from "./utils";
 import { State } from "fp-ts/lib/State";
 import { random } from "./random";
@@ -44,14 +44,16 @@ const randomNonce = (n0: number) => pipe(
   stringify
 )
 
-export const mine = (n: NextOpen) => {
+const sum = (ns: number[]): number => reduce<number, number>((m, x) => m + x, 0)(ns)
+
+export const mine = (n: NextOpen): Hasher => {
   const [algorithm, puzzle] = split(",")(n.algorithm)
   const matchesPuzzle = (s: string) => first(length(puzzle))(s) === puzzle
   const hasher = hashNew(n)
 
-  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(hash) ? mkHashResult(hash)(nonce) : () => pipe(nonce, parseInt, randomNonce, hasher, findNonce)
+  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(hash) ? mkHashResult(hash)(nonce) : () => pipe(nonce, alphaValues, sum, randomNonce, hasher, findNonce)
 
-  return trampoline<HashResult>(() => findNonce(pipe(n.timestamp, randomNonce, mkHashResult(""))))()
+  return (nonce: string) => trampoline<HashResult>(() => findNonce(hasher(nonce)))()
 }
 
 
