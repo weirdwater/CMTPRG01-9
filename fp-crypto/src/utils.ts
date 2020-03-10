@@ -1,5 +1,6 @@
 import { Transaction } from "./api/types"
 import { Functor } from "fp-ts/lib/Functor"
+import { Action } from "./continuation"
 
 export const stringify = (x: { toString: () => string }) => x.toString()
 
@@ -27,3 +28,18 @@ const sumBelowRec = (number: number, sum: number = 0): ThunkOrValue<number> =>
   number === 0
     ? sum
     : () => sumBelowRec(number - 1, sum + number)
+
+export const prettyPrint = (o: any) => JSON.stringify(o, null, 2)
+
+export const traceAction = (label: string) => <a>(a: Action<a>) => (i: a) => {
+  console.group(`\n${label} update`)
+      console.group('old', label)
+      console.log(prettyPrint(i))
+      console.groupEnd()
+    const o = a(i)
+      console.group('new', label)
+      console.log(prettyPrint(o))
+      console.groupEnd()
+    console.groupEnd()
+    return o
+}
