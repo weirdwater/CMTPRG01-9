@@ -18,7 +18,10 @@ export const mergeMod10 = mapMerge<number, number, number>(([a, b]) => (a + b) %
 
 const emptySet = [0,0,0,0,0,0,0,0,0,0]
 
-export const mod10 = (input: number[], state: number[] = emptySet): number[] => input.length > 0 ? mod10(tailFrom10(input), mergeMod10([supplement(first10(input)), state])) : state
+export const mod10 = (input: number[], state: number[] = emptySet): number[] =>
+  input.length > 0
+    ? mod10(tailFrom10(input), mergeMod10([supplement(first10(input)), state]))
+    : state
 
 const sha256 = (s: crypto.BinaryLike) => crypto.createHash('sha256').update(s).digest('hex')
 

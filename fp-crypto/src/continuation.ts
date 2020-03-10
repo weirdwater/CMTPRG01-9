@@ -1,4 +1,6 @@
 import { alphaValues } from "./mod10"
+import { trampoline } from "./utils"
+import { def, first } from "./arrays"
 
 
 export interface Fun<a,b> { (_: a): b }
@@ -46,12 +48,26 @@ export const nothing = <a>(): Continuation<a> => mkContinuation({
   run: (cont) => null
 })
 
+export const once = (): Continuation<{}> => {
+  let done = false
+  return mkContinuation({
+    run: (cont) => {
+      if (!done) {
+        done = true
+        cont({})
+      }
+    }
+  })
+}
+
 // stateful
 export const stateful = <a>(c: IOContinuation<a,a>): IOContinuation<a,a> => (initialState: a) => {
-  let state = initialState
 
   return mkContinuation({
-    run: (cont) => c(state).run(x => { state = x; cont(x) })
+    run: (cont) => {
+      const loop = (c: IOContinuation<a,a>) => (s0: a): void => c(s0).run(s1 => { cont(s1); loop(c)(s1) })
+      loop(c)(initialState)
+    }
   })
 }
 
@@ -72,4 +88,5 @@ export const any = <a>(cs: Continuation<a>[]) => mkContinuation<a>({
   run: (cont) => cs.map(c => c.run(cont))
 })
 
+const cstate = <a>(c: IOContinuation<a,a>) => (s0: a): void => c(s0).run(cstate(c))
 
