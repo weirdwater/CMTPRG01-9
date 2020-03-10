@@ -5,6 +5,7 @@ import { mod10Hash, alphaValues } from "./mod10";
 import { stringify, first, length, trampoline, trace } from "./utils";
 import { State } from "fp-ts/lib/State";
 import { random } from "./random";
+import { threadId, isMainThread } from 'worker_threads'
 
 export type Hasher = State<string, string>
 
@@ -41,7 +42,7 @@ export const hashNew = (next: NextOpen) => pipe(
 const randomNonce = (n0: number) => pipe(
   random(n0),
   ([n1, s]) => n1,
-  trace('random nonce:'),
+  trace(`[${isMainThread ? 'm' : 'w'}|${threadId}] random nonce:`),
   stringify
 )
 
@@ -52,9 +53,9 @@ export const mine = (n: NextOpen): Hasher => {
   const matchesPuzzle = (s: string) => first(length(puzzle))(s) === puzzle
   const hasher = hashNew(n)
 
-  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(trace('hash:')(hash)) ? mkHashResult(hash)(nonce) : () => pipe(nonce, parseInt, randomNonce, hasher, findNonce)
+  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(trace(`[${isMainThread ? 'm' : 'w'}|${threadId}] hash:`)(hash)) ? mkHashResult(hash)(nonce) : () => pipe(nonce, parseInt, randomNonce, hasher, findNonce)
 
   return (nonce: string) => trampoline<HashResult>(() => findNonce(hasher(nonce)))()
 }
 
-
+export const isHashResult = (x: any): x is HashResult => Array.isArray(x) && x.length === 2 && typeof x[0] === 'string' && typeof x[1] === 'string'

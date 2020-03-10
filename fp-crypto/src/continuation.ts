@@ -1,7 +1,3 @@
-import { alphaValues } from "./mod10"
-import { trampoline } from "./utils"
-import { def, first } from "./arrays"
-
 
 export interface Fun<a,b> { (_: a): b }
 
