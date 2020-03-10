@@ -1,5 +1,5 @@
-import { getNext, getRandomNumber } from "./api";
-import { Next, NextClosed, NextOpen } from "./api/types";
+import { getNext, getRandomNumber, publishNonce } from "./api";
+import { Next, NextClosed, NextOpen, SolutionResponse } from "./api/types";
 import { async, AsyncState, isLoaded, isUnloaded, LoadedAsyncState, mkLoadedAsync, mkLoadingAsync, mkUnloadedAsync } from "./async-state";
 import { Action, any, IOContinuation, mkContinuation, nothing, once, stateful, wait } from "./continuation";
 import { HashResult, mine } from "./hash-block";
@@ -33,17 +33,31 @@ interface NextOpenState {
   nonce: LoadedAsyncState<string>
 }
 
+interface NonceFoundState {
+  stage: 'nonce - found'
+  nextBlock: LoadedAsyncState<NextOpen>
+  nonce: LoadedAsyncState<string>
+  reward: AsyncState<SolutionResponse>
+}
+
 type AppState =
   | InitNonceState
   | InitNextState
   | NextOpenState
   | NextClosedState
+  | NonceFoundState
 
 const initialState: AppState = {
   stage: 'init - nonce',
   nextBlock: mkUnloadedAsync(),
   nonce: mkUnloadedAsync()
 }
+
+const startWithNonce = (n: string): AppState => ({
+  stage: 'init - next',
+  nextBlock: mkUnloadedAsync(),
+  nonce: mkLoadedAsync(n)
+})
 
 stateful<AppState>(s0 => any<Action<AppState>>([
     s0.stage === 'init - nonce'
@@ -74,7 +88,9 @@ stateful<AppState>(s0 => any<Action<AppState>>([
     : s0.stage === 'next - closed'
       ? wait(s0.nextBlock.value.countdown).map<Action<AppState>>(() => s1 => s1.stage === 'next - closed' ? { ...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1)
     : s0.stage === 'next - open'
-      ? wait(s0.nextBlock.value.countdown).map<Action<AppState>>(() => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1)
+      ? c_mine(s0.nextBlock.value)(s0.nonce.value).map<Action<AppState>>(([hash, nonce]) => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'nonce - found', nonce: mkLoadedAsync(nonce), reward: mkLoadingAsync() } : s1 )
+    : s0.stage === 'nonce - found'
+      ? async(() => publishNonce('Arjo 0902252')(s0.nonce.value))(s0.reward).map(a => s1 => s1.stage === 'nonce - found' ? {...s1, reward: a(s1.reward) } : s1)
     : nothing()
   ]).map(a => traceAction('AppState')(a)(s0))
 )(initialState).run(s => {})

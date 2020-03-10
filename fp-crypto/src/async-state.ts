@@ -40,6 +40,6 @@ export const async = <a>(p: Fun<{},Promise<a>>): IOContinuation<AsyncState<a>, A
     : isLoading(s0)
       ? p({})
         .then(x => cont(s1 => isLoading(s1) ? mkLoadedAsync(x) : s1))
-        .catch(e => cont(s1 => isLoading(s1) ? mkErrorAsync(e) : s1))
+        .catch(e => {console.log('error!', e) ; cont(s1 => isLoading(s1) ? mkErrorAsync(e) : s1) })
       : null
 })

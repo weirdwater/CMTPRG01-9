@@ -40,3 +40,7 @@ export interface SolutionDTO {
   nonce: string
   user: string
 }
+
+export interface SolutionResponse {
+  message: string
+}

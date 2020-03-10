@@ -2,7 +2,7 @@ import { pipe } from "fp-ts/lib/pipeable";
 import { Block, NextOpen, TransactionData } from "./api/types";
 import { join, map, split, def, reduce } from "./arrays";
 import { mod10Hash, alphaValues } from "./mod10";
-import { stringify, first, length, trampoline } from "./utils";
+import { stringify, first, length, trampoline, trace } from "./utils";
 import { State } from "fp-ts/lib/State";
 import { random } from "./random";
 
@@ -41,6 +41,7 @@ export const hashNew = (next: NextOpen) => pipe(
 const randomNonce = (n0: number) => pipe(
   random(n0),
   ([n1, s]) => n1,
+  trace('random nonce:'),
   stringify
 )
 
@@ -51,7 +52,7 @@ export const mine = (n: NextOpen): Hasher => {
   const matchesPuzzle = (s: string) => first(length(puzzle))(s) === puzzle
   const hasher = hashNew(n)
 
-  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(hash) ? mkHashResult(hash)(nonce) : () => pipe(nonce, alphaValues, sum, randomNonce, hasher, findNonce)
+  const findNonce = ([hash, nonce]: HashResult) => matchesPuzzle(trace('hash:')(hash)) ? mkHashResult(hash)(nonce) : () => pipe(nonce, parseInt, randomNonce, hasher, findNonce)
 
   return (nonce: string) => trampoline<HashResult>(() => findNonce(hasher(nonce)))()
 }

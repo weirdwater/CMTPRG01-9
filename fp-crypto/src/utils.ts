@@ -43,3 +43,8 @@ export const traceAction = (label: string) => <a>(a: Action<a>) => (i: a) => {
     console.groupEnd()
     return o
 }
+
+export const trace = (label: string) => <a>(x: a): a => {
+  console.log(label, x)
+  return x
+}

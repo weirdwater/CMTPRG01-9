@@ -1,4 +1,4 @@
-import { Next } from "./types";
+import { Next, SolutionResponse } from "./types";
 import Axios from "axios";
 
 const baseUrl = 'https://programmeren9.cmgt.hr.nl:8000/api/blockchain'
@@ -21,4 +21,14 @@ export const getRandomNumber = async(): Promise<string> => {
   }
 
   throw new Error(`Failed to fetch random number: ${res.status} ${res.statusText}`)
+}
+
+export const publishNonce = (user: string) => async(nonce: string): Promise<SolutionResponse> => {
+  const res = await Axios.post<SolutionResponse>(baseUrl, { user, nonce })
+
+  if (res.status === 200) {
+    return res.data
+  }
+
+  throw new Error(`Failed to publish the nonce ${nonce}: ${res.status} ${res.statusText}`)
 }
