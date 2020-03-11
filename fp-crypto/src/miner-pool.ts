@@ -3,7 +3,6 @@ import { IOContinuation, Action, mkContinuation } from "./continuation"
 import { HashResult, isHashResult } from "./hash-block"
 import path = require("path")
 import { Worker } from 'worker_threads'
-import { workers } from "cluster"
 
 export interface IdlePoolState {
   status: 'idle'
@@ -45,9 +44,13 @@ export const mineworker = (block: NextOpen) => (nonce: string): Promise<HashResu
       block: block
     }
   })
-  worker.on('message', res)
+  worker.on('message', d => {
+    res(d)
+    worker.terminate()
+  })
   worker.on('error', rej)
-  worker.on('exit', code => code !== 0 && rej(`Worker stopped with exit code ${code}`))
+  worker.on('exit', code => code !== 0 && rej(`Worker ${worker.threadId} stopped with exit code ${code}`))
+  setTimeout(() => worker.terminate(), block.countdown + 1000)
 })
 
 export const mineworkerpool = (block: NextOpen) => (nonce: string): IOContinuation<PoolState<HashResult>,Action<PoolState<HashResult>>> => (s0) => mkContinuation({

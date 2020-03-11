@@ -26,6 +26,8 @@ export const getRandomNumber = async(): Promise<string> => {
 export const publishNonce = (user: string) => async(nonce: string): Promise<SolutionResponse> => {
   const res = await Axios.post<SolutionResponse>(baseUrl, { user, nonce })
 
+  console.log('publish nonce:', res.data)
+
   if (res.status === 200) {
     return res.data
   }

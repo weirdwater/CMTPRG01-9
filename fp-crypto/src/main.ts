@@ -97,15 +97,21 @@ stateful<AppState>(s0 => any<Action<AppState>>([
     : s0.stage === 'next - open'
       ? any<Action<AppState>>([
         wait(s0.nextBlock.value.countdown).map<Action<AppState>>(() => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1),
-        // async(() => mineworker(s0.nextBlock.value)(s0.nonce.value))(s0.newNonce).map(a => s1 => s1.stage === 'next - open' ? {...s1, newNonce: a(s1.newNonce)} : s1)
+        async(() => mineworker(s0.nextBlock.value)(s0.nonce.value))(s0.newNonce).map(a => s1 => s1.stage === 'next - open' ? {...s1, newNonce: a(s1.newNonce)} : s1),
         // mineworkerpool(s0.nextBlock.value)(s0.nonce.value)(s0.workers).map(a => s1 => s1.stage === 'next - open' ? {...s1, workers: a(s1.workers)} : s1)
-        c_mine(s0.nextBlock.value)(s0.nonce.value).map<Action<AppState>>(([hash, nonce]) => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'nonce - found', nonce: mkLoadedAsync(nonce), reward: mkLoadingAsync() } : s1 )
+        // c_mine(s0.nextBlock.value)(s0.nonce.value).map<Action<AppState>>(([hash, nonce]) => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'nonce - found', nonce: mkLoadedAsync(nonce), reward: mkLoadingAsync() } : s1 )
       ])
     : s0.stage === 'nonce - found'
       ? async(() => publishNonce('Arjo 0902252')(s0.nonce.value))(s0.reward).map(a => s1 => s1.stage === 'nonce - found' ? {...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1)
     : nothing()
-  ]).map(a => traceAction('AppState')(a)(s0))
+  // ]).map(a => traceAction('AppState')(a)(s0))
   // ]).map(a => a(s0))
+  ]).map(a => {
+    console.log('')
+    const s1 = a(s0)
+    console.log(s0.stage, '~>', s1.stage)
+    return s1
+  })
 )(initialState).run(s => {})
 
 // mineworker(next)('2504724111').then(console.log).catch(console.error)
