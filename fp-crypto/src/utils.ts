@@ -1,6 +1,5 @@
-import { Transaction } from "./api/types"
-import { Functor } from "fp-ts/lib/Functor"
 import { Action } from "./continuation"
+import { isMainThread, threadId } from "worker_threads"
 
 export const stringify = (x: { toString: () => string }) => x.toString()
 
@@ -18,9 +17,13 @@ const isLazy = <a>(x: ThunkOrValue<a>): x is (() => a) => typeof x === 'function
 
 export const trampoline = <a>(f: () => ThunkOrValue<a>) => (): a => {
   let result = f()
+  let count = 0
   while (result instanceof Function) {
     result = result()
+    count++
+    console.log(`[${isMainThread ? 'm' : 'w'}|${threadId}] ${count} iterations.`)
   }
+  console.log(`[${isMainThread ? 'm' : 'w'}|${threadId}] Spent ${count} iterations to find nonce.`)
   return result
 }
 
@@ -48,3 +51,6 @@ export const trace = (label: string) => <a>(x: a): a => {
   console.log(label, x)
   return x
 }
+
+export const fst = <a,b>([f, s]: [a, b]) => f
+export const snd = <a,b>([f, s]: [a, b]) => s

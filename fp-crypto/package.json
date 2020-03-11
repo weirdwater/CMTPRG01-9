@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/node": "^13.7.5",
     "axios": "^0.19.2",
+    "colors": "^1.4.0",
     "fp-ts": "^2.5.0"
   },
   "devDependencies": {

@@ -1,14 +1,11 @@
+import colors from 'colors';
 import { getNext, getRandomNumber, publishNonce } from "./api";
-import { Next, NextClosed, NextOpen, SolutionResponse, Block } from "./api/types";
-import { async, AsyncState, isLoaded, isUnloaded, LoadedAsyncState, mkLoadedAsync, mkLoadingAsync, mkUnloadedAsync, LoadingAsyncState } from "./async-state";
-import { Action, any, IOContinuation, mkContinuation, nothing, once, stateful, wait, promise } from "./continuation";
-import { HashResult, mine, isHashResult } from "./hash-block";
-import { traceAction, stringify } from "./utils";
-import { mineworkerpool, PoolState, mkIdlePoolState, mineworker } from "./miner-pool";
-
-const c_mine = (block: NextOpen): IOContinuation<string,HashResult> => (nonce) => mkContinuation({
-  run: (cont) => cont(mine(block)(nonce))
-})
+import { Next, NextClosed, NextOpen } from "./api/types";
+import { async, AsyncState, isError, isLoaded, isUnloaded, LoadedAsyncState, mkLoadedAsync, mkLoadingAsync, mkUnloadedAsync } from "./async-state";
+import { Action, any, nothing, once, stateful, wait } from "./continuation";
+import { HashResult } from "./hash-block";
+import { mineworker } from "./miner-pool";
+import { fst, snd } from "./utils";
 
 interface InitNonceState {
   stage: 'init - nonce'
@@ -39,7 +36,7 @@ interface NonceFoundState {
   stage: 'nonce - found'
   nextBlock: LoadedAsyncState<NextOpen>
   nonce: LoadedAsyncState<string>
-  reward: AsyncState<SolutionResponse>
+  reward: AsyncState<boolean>
 }
 
 type AppState =
@@ -53,17 +50,6 @@ const initialState: AppState = {
   stage: 'init - nonce',
   nextBlock: mkUnloadedAsync(),
   nonce: mkUnloadedAsync()
-}
-
-const startWithNonce = (n: string): AppState => ({
-  stage: 'init - next',
-  nextBlock: mkUnloadedAsync(),
-  nonce: mkLoadedAsync(n)
-})
-
-const pluralizeNonce = (n: string) => {
-  const d = parseInt(n)
-  return [ n, stringify(d / 2), stringify(d * 2), stringify(d % 12345) ]
 }
 
 stateful<AppState>(s0 => any<Action<AppState>>([
@@ -93,25 +79,39 @@ stateful<AppState>(s0 => any<Action<AppState>>([
         }),
       ]).map(a => s1 => a(s1))
     : s0.stage === 'next - closed'
-      ? wait(s0.nextBlock.value.countdown).map<Action<AppState>>(() => s1 => s1.stage === 'next - closed' ? { ...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1)
+      ? wait(s0.nextBlock.value.countdown).map<Action<AppState>>(() => s1 => s1.stage === 'next - closed' ? { ...s1, stage: 'init - next', nextBlock: mkLoadingAsync() } : s1)
     : s0.stage === 'next - open'
       ? any<Action<AppState>>([
-        wait(s0.nextBlock.value.countdown).map<Action<AppState>>(() => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1),
-        async(() => mineworker(s0.nextBlock.value)(s0.nonce.value))(s0.newNonce).map(a => s1 => s1.stage === 'next - open' ? {...s1, newNonce: a(s1.newNonce)} : s1),
-        // mineworkerpool(s0.nextBlock.value)(s0.nonce.value)(s0.workers).map(a => s1 => s1.stage === 'next - open' ? {...s1, workers: a(s1.workers)} : s1)
-        // c_mine(s0.nextBlock.value)(s0.nonce.value).map<Action<AppState>>(([hash, nonce]) => s1 => s1.stage === 'next - open' ? { ...s1, stage: 'nonce - found', nonce: mkLoadedAsync(nonce), reward: mkLoadingAsync() } : s1 )
+        async(() => mineworker(s0.nextBlock.value)(s0.nonce.value))(s0.newNonce).map(a => s1 => {
+          if (s1.stage !== 'next - open') return s1
+          const newNonce = a(s1.newNonce)
+          if (isError(newNonce)) {
+            console.log(colors.yellow('Could not find nonce in time. Retrieving next block information.'))
+            return { stage: 'init - next', nextBlock: mkLoadingAsync(), nonce: s1.nonce }
+          }
+          if (isLoaded(newNonce)) {
+            console.log(colors.green(`Found nonce ${snd(newNonce.value)} for hash ${fst(newNonce.value)}. Claiming reward.`))
+            return { stage: 'nonce - found', nonce: mkLoadedAsync(newNonce.value[1]), reward: mkLoadingAsync(), nextBlock: s1.nextBlock }
+          }
+          return {...s1, newNonce }
+        }),
       ])
     : s0.stage === 'nonce - found'
-      ? async(() => publishNonce('Arjo 0902252')(s0.nonce.value))(s0.reward).map(a => s1 => s1.stage === 'nonce - found' ? {...s1, stage: 'init - next', nextBlock: mkUnloadedAsync() } : s1)
+      ? async(() => publishNonce('Arjo 0902252')(s0.nonce.value))(s0.reward).map(a => s1 => {
+        if (s1.stage !== 'nonce - found') return s1
+
+        const reward = a(s1.reward)
+        console.log(reward ? colors.green('🎉 Block rewarded! 🍻') : colors.red('😣 Nonce expired.'))
+
+        return { stage: 'init - next', nextBlock: mkUnloadedAsync(), nonce: s1.nonce }
+      })
     : nothing()
   // ]).map(a => traceAction('AppState')(a)(s0))
   // ]).map(a => a(s0))
   ]).map(a => {
-    console.log('')
     const s1 = a(s0)
-    console.log(s0.stage, '~>', s1.stage)
+    console.log(`\n${s0.stage} ~> ${s1.stage}`)
     return s1
   })
 )(initialState).run(s => {})
 
-// mineworker(next)('2504724111').then(console.log).catch(console.error)

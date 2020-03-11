@@ -48,9 +48,9 @@ export const mineworker = (block: NextOpen) => (nonce: string): Promise<HashResu
     res(d)
     worker.terminate()
   })
-  worker.on('error', rej)
+  worker.on('error', err => { console.error(err); rej(err) })
   worker.on('exit', code => code !== 0 && rej(`Worker ${worker.threadId} stopped with exit code ${code}`))
-  setTimeout(() => worker.terminate(), block.countdown + 1000)
+  setTimeout(() => worker.terminate(), block.countdown)
 })
 
 export const mineworkerpool = (block: NextOpen) => (nonce: string): IOContinuation<PoolState<HashResult>,Action<PoolState<HashResult>>> => (s0) => mkContinuation({

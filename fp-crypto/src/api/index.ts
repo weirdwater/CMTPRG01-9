@@ -23,13 +23,11 @@ export const getRandomNumber = async(): Promise<string> => {
   throw new Error(`Failed to fetch random number: ${res.status} ${res.statusText}`)
 }
 
-export const publishNonce = (user: string) => async(nonce: string): Promise<SolutionResponse> => {
+export const publishNonce = (user: string) => async(nonce: string): Promise<boolean> => {
   const res = await Axios.post<SolutionResponse>(baseUrl, { user, nonce })
 
-  console.log('publish nonce:', res.data)
-
   if (res.status === 200) {
-    return res.data
+    return res.data.message === 'blockchain accepted, user awarded'
   }
 
   throw new Error(`Failed to publish the nonce ${nonce}: ${res.status} ${res.statusText}`)
