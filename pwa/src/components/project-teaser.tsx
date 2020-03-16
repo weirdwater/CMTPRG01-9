@@ -13,7 +13,7 @@ export const ProjectTeaser = ({ project, size }: {
     </div>
     <div className={styles.textWrapper} >
       <ul className={styles.tags} >
-        { project.tags.map(t => <li>{t}</li>) }
+        { project.tags.map(t => <li key={t} >{t}</li>) }
         { size === 'large' && <li className={styles.year} >{project.year}</li> }
       </ul>
       <h1 className={styles.title} >{project.title}</h1>
