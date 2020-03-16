@@ -9,6 +9,7 @@ export const App = () => (
     <h1>App</h1>
     <ProjectTeaser project={sample} size="large" />
     <ProjectTeaser project={sample} size="small" />
+    <ProjectTeaser project={sample} size="small" />
   </div>
 )
 
