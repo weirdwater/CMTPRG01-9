@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { TypedCssModulesPlugin } = require('typed-css-modules-webpack-plugin');
 const path = require('path')
 
 module.exports = {
@@ -47,6 +48,9 @@ module.exports = {
     port: 3000
   },
   plugins: [
+    new TypedCssModulesPlugin({
+      globPattern: 'src/**/*.scss',
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/template.html')
     })
