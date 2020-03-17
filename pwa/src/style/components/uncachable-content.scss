@@ -1,0 +1,30 @@
+
+.error {
+  background-color: var(--dark-highlight-red);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon {
+  fill: white;
+  width: 32px;
+  height: 32px;
+  margin: 20px 0 15px;
+}
+
+.message {
+  font-size: 12px;
+  text-align: center;
+  margin: 5px 10px 20px;
+}
+
+.shortMessage {
+  background-color: var(--dark-highlight-red);
+  border-radius: 30px;
+  min-height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
