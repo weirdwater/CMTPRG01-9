@@ -56,7 +56,13 @@
     margin-right: 14px;
     margin-bottom: 14px;
   }
+
+  .selected {
+    background-color: white;
+    color: var(--principle-red);
+  }
 }
+
 
 .actions {
   grid-column: 1 / end;
