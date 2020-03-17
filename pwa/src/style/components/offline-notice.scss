@@ -1,0 +1,29 @@
+
+.passePartout {
+  background-color: var(--dark-highlight-red);
+  border-radius: 100%;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  margin: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon {
+  fill: white;
+  width: 50%;
+  height: 50%;
+}
+
+.notice {
+  background: var(--light-red);
+  border-radius: 5px;
+  margin: 7px 14px;
+  color: var(--dark-highlight-red);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+}

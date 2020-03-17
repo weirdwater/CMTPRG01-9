@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "svg": "npx @svgr/cli -d src/icons --template src/icons/svg-template.js --ext tsx src/icons"
   },
   "dependencies": {
     "react": "^16.13.0",
