@@ -10,6 +10,7 @@ declare const styles: {
   readonly "links": string;
   readonly "linksWrapper": string;
   readonly "metadata": string;
+  readonly "youtube": string;
 };
 export = styles;
 
