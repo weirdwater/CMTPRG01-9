@@ -1,0 +1,21 @@
+
+.list {
+  display: flex;
+  padding: 0;
+  flex-wrap: wrap;
+
+  li {
+    color: white;
+    display: block;
+    background-color: var(--dark-highlight-red);
+    padding: 4px 20px;
+    border-radius: 15px;
+    margin-right: 14px;
+    margin-bottom: 14px;
+  }
+
+  .selected {
+    background-color: white;
+    color: var(--principle-red);
+  }
+}

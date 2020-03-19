@@ -5,8 +5,6 @@ declare const styles: {
   readonly "heading": string;
   readonly "icon": string;
   readonly "open": string;
-  readonly "selected": string;
-  readonly "tags": string;
   readonly "tray": string;
   readonly "trayContent": string;
   readonly "wrapper": string;

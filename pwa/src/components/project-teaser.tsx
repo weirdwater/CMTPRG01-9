@@ -2,14 +2,15 @@ import * as React from 'react'
 import { Project } from '../api/types'
 import { qualifyResource } from '../api'
 import * as styles from '../style/components/project-teaser.scss'
+import { ResponsiveImage } from './responsive-image'
 
 export const ProjectTeaser = ({ project, size }: {
   project: Project
   size: 'small' | 'large'
 }) => (
   <article className={[styles.teaser, styles[size]].join(' ')} >
-    <div className={styles.imageRatio}>
-      <img src={qualifyResource(project.headerImage)} className={styles.image} />
+    <div className={styles.imageWrapper} >
+      <ResponsiveImage src={qualifyResource(project.headerImage)} ratio={size === 'small' ? .79 : .53} />
     </div>
     <div className={styles.textWrapper} >
       <ul className={styles.tags} >

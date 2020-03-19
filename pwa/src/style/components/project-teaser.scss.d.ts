@@ -1,6 +1,5 @@
 declare const styles: {
-  readonly "image": string;
-  readonly "imageRatio": string;
+  readonly "imageWrapper": string;
   readonly "large": string;
   readonly "small": string;
   readonly "tagline": string;
