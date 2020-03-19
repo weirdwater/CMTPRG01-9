@@ -6,28 +6,40 @@ import { TagList } from './tag-list'
 import { mkNone } from '../lib/maybe'
 import { Time, User, Network } from '../icons'
 import { ResponsiveImage } from './responsive-image'
+import styles from '../style/components/project-page.scss'
 
 export const ProjectPage = ({ project }: { project: Project }) => (
   <div>
     <PageHeader>
-      <ResponsiveImage src={qualifyResource(project.headerImage)} ratio={0.57} />
-      <h1>{project.title}</h1>
-      <p>{project.tagline}</p>
-      <TagList tags={project.tags} selected={mkNone()} />
-      <div>
-        <div><Time />{project.duration}, {project.year}</div>
-        <div><User />{project.author}</div>
+      <div className={styles.heroImage} >
+        <ResponsiveImage src={qualifyResource(project.headerImage)} ratio={0.57} />
+      </div>
+      <div className={styles.header} >
+        <h1>{project.title}</h1>
+        <p>{project.tagline}</p>
+        <TagList tags={project.tags} selected={mkNone()} />
+      </div>
+      <div className={styles.metadata} >
+        <div><Time className={styles.icon} />{project.duration}, {project.year}</div>
+        <div><User className={styles.icon} />{project.author}</div>
       </div>
     </PageHeader>
-    <p>{project.description}</p>
+    <p className={styles.description} >{project.description}</p>
     <div>Youtube: {project.youtube}</div>
-    <div>
-      {project.screenshots.map(s => <ResponsiveImage src={qualifyResource(s)} ratio={0.91} />)}
+    <div className={styles.galleryWrapper}>
+      <div className={styles.gallery} >
+        {project.screenshots.map(s => <div className={styles.galleryImage} ><ResponsiveImage src={qualifyResource(s)} ratio={0.91} /></div>)}
+      </div>
     </div>
-    <div>
+    <div className={styles.linksWrapper} >
       <h2>Links</h2>
-      <ul>
-        {project.websites.map(url => <li><a href={url} target="_blank" ><Network/>{url}</a></li>)}
+      <ul className={styles.links} >
+        {project.websites.map(url => (
+          <li>
+            <Network className={styles.icon} />
+            <a href={url} target="_blank" >{url}</a>
+          </li>
+        ))}
       </ul>
     </div>
   </div>

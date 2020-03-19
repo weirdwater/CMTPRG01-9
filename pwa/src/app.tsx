@@ -28,7 +28,7 @@ const sampleTags: string[] = [
 export const App = () => (
   <div>
     <ProjectPage project={sample} />
-    <FilterPage tags={sampleTags} open={false} selected={mkSome('jaar4')} >
+    {/* <FilterPage tags={sampleTags} open={true} selected={mkSome('jaar4')} >
       <PageHeader>
         <ProjectTeaser project={sample} size="large" />
       </PageHeader>
@@ -37,7 +37,7 @@ export const App = () => (
       <ProjectTeaser project={sample} size="small" />
       <ProjectTeaser project={sample} size="small" />
       <ProjectTeaser project={sample} size="small" />
-    </FilterPage>
+    </FilterPage> */}
   </div>
 )
 
