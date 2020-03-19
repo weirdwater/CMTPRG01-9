@@ -28,14 +28,14 @@ export const ProjectPage = ({ project }: { project: Project }) => (
     <div>Youtube: {project.youtube}</div>
     <div className={styles.galleryWrapper}>
       <div className={styles.gallery} >
-        {project.screenshots.map(s => <div className={styles.galleryImage} ><ResponsiveImage src={qualifyResource(s)} ratio={0.91} /></div>)}
+        {project.screenshots.map((s, i) => <div key={i} className={styles.galleryImage} ><ResponsiveImage src={qualifyResource(s)} ratio={0.91} /></div>)}
       </div>
     </div>
     <div className={styles.linksWrapper} >
       <h2>Links</h2>
       <ul className={styles.links} >
-        {project.websites.map(url => (
-          <li>
+        {project.websites.map((url, i) => (
+          <li key={i}>
             <Network className={styles.icon} />
             <a href={url} target="_blank" >{url}</a>
           </li>
