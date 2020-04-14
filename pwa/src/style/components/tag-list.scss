@@ -14,6 +14,15 @@
     margin-bottom: 14px;
   }
 
+  a {
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .selected {
     background-color: white;
     color: var(--principle-red);
