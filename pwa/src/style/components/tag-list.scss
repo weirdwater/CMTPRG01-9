@@ -25,6 +25,9 @@
 
   .selected {
     background-color: white;
-    color: var(--principle-red);
+
+    a {
+      color: var(--principle-red);
+    }
   }
 }
