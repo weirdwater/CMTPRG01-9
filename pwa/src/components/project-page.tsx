@@ -11,6 +11,8 @@ import YouTube from 'react-youtube'
 import { AsyncState, isLoaded, mkUnloadedAsync, mkLoadingAsync, isUnloaded } from '../lib/async'
 import { Action } from '../lib/fun'
 import { useLocation } from 'react-router-dom'
+import { OfflineNotice } from './offline-notice'
+import { Content } from './content'
 
 
 const sanitizeYoutube = (x: string): Maybe<string> => {
@@ -35,7 +37,7 @@ const sanitizeYoutube = (x: string): Maybe<string> => {
   return mkNone()
 }
 
-export const ProjectPage = (props: { project: AsyncState<Project>, onState: (a: Action<AsyncState<Project>>) => void }) => {
+export const ProjectPage = (props: { online: boolean, project: AsyncState<Project>, onState: (a: Action<AsyncState<Project>>) => void }) => {
 
   const location = useLocation()
 
@@ -51,7 +53,8 @@ export const ProjectPage = (props: { project: AsyncState<Project>, onState: (a: 
     return (
       <div>
         <PageHeader> </PageHeader>
-        <div>Loading...</div>
+        <OfflineNotice online={props.online} />
+        <Content>Loading...</Content>
       </div>
     )
   }
@@ -75,7 +78,8 @@ export const ProjectPage = (props: { project: AsyncState<Project>, onState: (a: 
           <div><User className={styles.icon} />{project.author}</div>
         </div>
       </PageHeader>
-      <p className={styles.description} >{project.description}</p>
+      <OfflineNotice online={props.online} />
+      <Content><p>{project.description}</p></Content>
       { isSome(youtubeId) && <YouTube videoId={youtubeId.value} containerClassName={styles.youtube} /> }
       <div className={styles.galleryWrapper}>
         <div className={styles.gallery} >

@@ -1,6 +1,5 @@
 declare const styles: {
   readonly "contentPadding": string;
-  readonly "description": string;
   readonly "gallery": string;
   readonly "galleryImage": string;
   readonly "galleryWrapper": string;

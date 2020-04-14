@@ -2,7 +2,7 @@ import * as React from 'react'
 import style from '../style/components/offline-notice.scss'
 import { Airplane } from '../icons'
 
-export const OfflineNotice = (props: {}) => (
+export const OfflineNotice = (props: { online: boolean}) => props.online ? null : (
   <aside className={style.notice} >
     <div className={style.passePartout} >
       <Airplane className={style.icon} />

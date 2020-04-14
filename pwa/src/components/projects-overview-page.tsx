@@ -4,11 +4,12 @@ import { PageHeader } from './page-header'
 import { ProjectTeaser } from './project-teaser'
 import { OfflineNotice } from './offline-notice'
 import { mkNone, isNone } from '../lib/maybe'
-import { AsyncState, isLoaded, isUnloaded, mkLoadingAsync, mkUnloadedAsync } from '../lib/async'
+import { AsyncState, isLoaded, isUnloaded, mkLoadingAsync, mkUnloadedAsync, isError } from '../lib/async'
 import { AppRoutes, ProjectsOverviewRoute, eqRoute } from './router'
 import { Project } from '../api/types'
 import { Action } from '../lib/fun'
 import { useHistory, useLocation } from 'react-router-dom'
+import { Content } from './content'
 
 export interface ProjectsOverviewPageState {
   filterOpen: boolean,
@@ -23,14 +24,22 @@ const setupAsyncStates: Action<ProjectsOverviewPageState> = (s0: ProjectsOvervie
   : isUnloaded(s0.projects) ? setupAsyncStates({...s0,projects: mkLoadingAsync()})
   : s0
 
+export const recoverOverviewState: Action<ProjectsOverviewPageState> = (s0: ProjectsOverviewPageState) =>
+    isError(s0.tags) ? setupAsyncStates({...s0, tags: mkLoadingAsync()})
+  : isError(s0.spotlight) ? setupAsyncStates({...s0, spotlight: mkLoadingAsync()})
+  : isError(s0.projects) ? setupAsyncStates({...s0,projects: mkLoadingAsync()})
+  : s0
+
 export const ProjectsOverviewPage = ({
   state,
   route,
-  onState
+  onState,
+  online
 }: {
   state: ProjectsOverviewPageState,
-  onState: (a: Action<ProjectsOverviewPageState>) => void
-  route: ProjectsOverviewRoute
+  onState: (a: Action<ProjectsOverviewPageState>) => void,
+  route: ProjectsOverviewRoute,
+  online: boolean
 }): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
@@ -56,9 +65,10 @@ export const ProjectsOverviewPage = ({
         onState(s1 => ({...s1, filterOpen: false }))
       } }>
       <PageHeader>
-        { isLoaded(state.spotlight) ? <ProjectTeaser project={state.spotlight.value} size="large" onSelect={() => isLoaded(state.spotlight) && navToProject(state.spotlight.value.slug)} /> : <div>Loading...</div> }
+        { isLoaded(state.spotlight) ? <ProjectTeaser project={state.spotlight.value} size="large" onSelect={() => isLoaded(state.spotlight) && navToProject(state.spotlight.value.slug)} /> : <Content>Loading...</Content> }
       </PageHeader>
-      { isLoaded(state.projects) ? state.projects.value.map(p => <ProjectTeaser project={p} key={p._id} size="small" onSelect={() => navToProject(p.slug)} />) : <div>Loading...</div> }
+      <OfflineNotice online={online} />
+      { isLoaded(state.projects) ? state.projects.value.map(p => <ProjectTeaser project={p} key={p._id} size="small" onSelect={() => navToProject(p.slug)} />) : <Content>Loading...</Content> }
     </FilterPage>
   )
 }
