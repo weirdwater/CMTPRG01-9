@@ -34,6 +34,10 @@ export const ProjectsOverviewPage = ({
 }): JSX.Element => {
   const history = useHistory()
 
+  React.useEffect(() => {
+    onState(s1 => setupAsyncStates(s1))
+  }, [])
+
   return (
     <FilterPage
       tags={state.tags}
@@ -42,7 +46,7 @@ export const ProjectsOverviewPage = ({
       onToggleTray={() => onState(s1 => ({...s1, filterOpen: !s1.filterOpen}))}
       onChange={t => isNone(t) ? history.push('/') : history.push('/?' + t.value) }>
       <PageHeader>
-        {/* { isLoaded(state.spotlight) ? <ProjectTeaser project={state.spotlight.value} size="large" /> : <div>Loading...</div> } */}
+        { isLoaded(state.spotlight) ? <ProjectTeaser project={state.spotlight.value} size="large" /> : <div>Loading...</div> }
       </PageHeader>
       { isLoaded(state.projects) ? state.projects.value.map(p => <ProjectTeaser project={p} size="small" />) : <div>Loading...</div> }
     </FilterPage>

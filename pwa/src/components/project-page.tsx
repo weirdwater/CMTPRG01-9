@@ -43,7 +43,7 @@ export const ProjectPage = ({ project }: { project: Project }) => {
         <div className={styles.header} >
           <h1>{project.title}</h1>
           <p>{project.tagline}</p>
-          <TagList tags={project.tags} selected={mkNone()} />
+          <TagList tags={project.tags} selected={mkNone()} onChange={() => {}} />
         </div>
         <div className={styles.metadata} >
           <div><Time className={styles.icon} />{project.duration}, {project.year}</div>
