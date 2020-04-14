@@ -1,5 +1,6 @@
 import { TagsCollection, Project, ProjectsCollection } from "./types"
 import { createQueryString } from "../lib/query"
+import { Maybe, isSome } from "../lib/maybe"
 
 export const qualifyResource = (s: string) => 'https://cmgt.hr.nl:8000/' + s
 

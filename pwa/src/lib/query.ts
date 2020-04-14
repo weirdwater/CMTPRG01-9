@@ -1,3 +1,4 @@
+import { def } from "./maybe"
 
 export interface Serializable {
   toString: () => string
@@ -7,7 +8,7 @@ export interface QueryParameters {
   [parameter: string]: Serializable | undefined
 }
 
-export const createQueryString = (params: QueryParameters): string => `?${Object.entries(params).map(p => p.map(s => encodeURIComponent(s ? s.toString() : 'true')).join('=')).join('&')}`
+export const createQueryString = (params: QueryParameters): string => `?${Object.entries(params).filter(([k, v]) => def(v)).map(p => p.map(s => encodeURIComponent(s ? s.toString() : 'true')).join('=')).join('&')}`
 
 export const getQueryParams = (query: string): QueryParameters => {
   const startQueryString = query.indexOf('?')

@@ -62,7 +62,7 @@ export const Router = ({onRoute, children}: { onRoute: (r: AppRoutes) => void, c
     { children }
     <Switch>
       <Route exact path="/" ><RouteToState route={{ kind: 'projects' }} onRoute={onRoute} /></Route>
-      <Route path="/project/:slug" ><RouteToState route={{ kind: 'projectDetail' }} onRoute={onRoute} /></Route>
+      <Route path="/projects/:slug" ><RouteToState route={{ kind: 'projectDetail' }} onRoute={onRoute} /></Route>
       <Route path="*" ><RouteToState route={{ kind: '404' }} onRoute={onRoute} /></Route>
     </Switch>
   </BrowserRouter>
