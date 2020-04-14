@@ -6,7 +6,7 @@ module.exports = {
   mode: 'development',
   entry: path.resolve(__dirname, 'src/main.tsx'),
   output: {
-    path: path.resolve(__dirname, '..', 'doc'),
+    path: path.resolve(__dirname, '..', 'docs'),
     filename: 'showcase.bundle.js'
   },
   resolve: {
