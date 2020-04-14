@@ -1,6 +1,7 @@
-import { BrowserRouter, Switch, Route, useParams } from "react-router-dom";
+import { BrowserRouter, Switch, Route, useParams, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 import { Maybe, mkMaybe, isSome } from "../lib/maybe";
+import { ProjectsOverviewPageState } from "./projects-overview-page";
 
 
 export interface AppRoute<k extends string, p extends { [k: string]: string }> {
@@ -8,11 +9,18 @@ export interface AppRoute<k extends string, p extends { [k: string]: string }> {
   params: { [P in keyof p]: Maybe<p[P]> }
 }
 
-export type AppRoutes = AppRoute<'projects', { tag: string }> | AppRoute<'404', {}> | AppRoute<'projectDetail', { slug: string }>
+export type ProjectsOverviewRoute = AppRoute<'projects', { tag: string }>
+
+export type AppRoutes = ProjectsOverviewRoute | AppRoute<'404', {}> | AppRoute<'projectDetail', { slug: string }>
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 const RouteToState = ({onRoute, route}: { onRoute: (r: AppRoutes) => void, route: Pick<AppRoutes, 'kind'> }) => {
 
-  const params = useParams<{ slug?: string, tag?: string }>()
+  const params = useParams<{ slug?: string }>()
+  const query = useQuery()
 
   useEffect(() => {
     if (route.kind === 'projectDetail') {
@@ -20,7 +28,7 @@ const RouteToState = ({onRoute, route}: { onRoute: (r: AppRoutes) => void, route
     }
 
     if (route.kind === 'projects') {
-      onRoute({ kind: 'projects', params: { tag: mkMaybe(params.tag) } })
+      onRoute({ kind: 'projects', params: { tag: mkMaybe(query.get('tag')) } })
     }
 
     if (route.kind === '404') {

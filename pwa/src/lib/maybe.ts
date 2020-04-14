@@ -42,4 +42,8 @@ export const mkNone = <a>(): Maybe<a> => mkMaybeFromBase(mkNoneBase())
 
 export const mkSome = <a>(x: a): Maybe<a> => mkMaybeFromBase(mkSomeBase(x))
 
-export const mkMaybe = <a>(x: a | undefined): Maybe<a> => x ? mkSome(x) : mkNone()
+export const def = <a>(x: a | undefined): x is a => typeof x !== 'undefined'
+
+export const mkMaybe = <a>(x: a | undefined | null): Maybe<a> => x !== null && def(x) ? mkSome(x) : mkNone()
+
+
