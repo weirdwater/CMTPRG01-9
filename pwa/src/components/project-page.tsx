@@ -8,6 +8,9 @@ import { Time, User, Network } from '../icons'
 import { ResponsiveImage } from './responsive-image'
 import styles from '../style/components/project-page.scss'
 import YouTube from 'react-youtube'
+import { AsyncState, isLoaded, mkUnloadedAsync, mkLoadingAsync, isUnloaded } from '../lib/async'
+import { Action } from '../lib/fun'
+import { useLocation } from 'react-router-dom'
 
 
 const sanitizeYoutube = (x: string): Maybe<string> => {
@@ -32,7 +35,29 @@ const sanitizeYoutube = (x: string): Maybe<string> => {
   return mkNone()
 }
 
-export const ProjectPage = ({ project }: { project: Project }) => {
+export const ProjectPage = (props: { project: AsyncState<Project>, onState: (a: Action<AsyncState<Project>>) => void }) => {
+
+  const location = useLocation()
+
+  React.useEffect(() => {
+    if (isUnloaded(props.project)) props.onState(s1 => mkLoadingAsync())
+  }, [props.project])
+
+  React.useEffect(() => {
+    props.onState(s1 => mkUnloadedAsync())
+  }, [location])
+
+  if (!isLoaded(props.project)) {
+    return (
+      <div>
+        <PageHeader> </PageHeader>
+        <div>Loading...</div>
+      </div>
+    )
+  }
+
+  const project = props.project.value
+
   const youtubeId = sanitizeYoutube(project.youtube)
   return (
     <div>
