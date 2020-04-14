@@ -5,7 +5,7 @@ import { ProjectTeaser } from './project-teaser'
 import { OfflineNotice } from './offline-notice'
 import { mkNone, isNone } from '../lib/maybe'
 import { AsyncState, isLoaded, isUnloaded, mkLoadingAsync, mkUnloadedAsync } from '../lib/async'
-import { AppRoutes, ProjectsOverviewRoute } from './router'
+import { AppRoutes, ProjectsOverviewRoute, eqRoute } from './router'
 import { Project } from '../api/types'
 import { Action } from '../lib/fun'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -40,7 +40,6 @@ export const ProjectsOverviewPage = ({
   }, [state])
 
   React.useEffect(() => {
-    console.log(location)
     onState(s1 => ({...s1, projects: mkUnloadedAsync() }))
   }, [location])
 
