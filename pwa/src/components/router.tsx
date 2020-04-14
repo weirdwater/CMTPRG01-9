@@ -1,32 +1,51 @@
 import { BrowserRouter, Switch, Route, useParams } from "react-router-dom";
-import React from "react";
-import { Maybe, mkMaybe } from "../lib/maybe";
+import React, { useEffect } from "react";
+import { Maybe, mkMaybe, isSome } from "../lib/maybe";
 
 
-interface AppRoute<k extends string, p extends { [k: string]: string }> {
+export interface AppRoute<k extends string, p extends { [k: string]: string }> {
   kind: k
   params: { [P in keyof p]: Maybe<p[P]> }
 }
 
-type AppRoutes = AppRoute<'projects', { tag: string }> | AppRoute<'404', {}> | AppRoute<'projectDetail', { slug: string }>
+export type AppRoutes = AppRoute<'projects', { tag: string }> | AppRoute<'404', {}> | AppRoute<'projectDetail', { slug: string }>
 
 const RouteToState = ({onRoute, route}: { onRoute: (r: AppRoutes) => void, route: Pick<AppRoutes, 'kind'> }) => {
 
   const params = useParams<{ slug?: string, tag?: string }>()
 
-  if (route.kind === 'projectDetail') {
-    onRoute({ kind: 'projectDetail', params: { slug: mkMaybe(params.slug) } })
-  }
+  useEffect(() => {
+    if (route.kind === 'projectDetail') {
+      onRoute({ kind: 'projectDetail', params: { slug: mkMaybe(params.slug) } })
+    }
 
-  if (route.kind === 'projects') {
-    onRoute({ kind: 'projects', params: { tag: mkMaybe(params.tag) } })
-  }
+    if (route.kind === 'projects') {
+      onRoute({ kind: 'projects', params: { tag: mkMaybe(params.tag) } })
+    }
 
-  if (route.kind === '404') {
-    onRoute({ kind: '404', params: {}})
-  }
+    if (route.kind === '404') {
+      onRoute({ kind: '404', params: {}})
+    }
+  })
 
   return null
+}
+
+export const eqRoute = (a: AppRoutes, b: AppRoutes) => {
+  if (a.kind !== b.kind) {
+    return false
+  }
+
+  const paramsA = Object.entries(a.params)
+  const paramsB = Object.entries(b.params)
+
+  const paramsAreEqual = paramsA.every(([ka,va]) => {
+    const pb = paramsB.find(([kb, vb]) => ka === kb)
+    if (pb === undefined) return false
+    const [kb, vb] = pb
+    return va.eqM(vb)
+  })
+  return paramsAreEqual
 }
 
 
